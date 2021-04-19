@@ -2,31 +2,28 @@
 	<v-app-bar
 		app
 		color="primary">
-		Wishare
+		<v-toolbar-title>Wishare</v-toolbar-title>
 
-		<v-spacer />
+		<v-spacer/>
 
 		<v-btn 
 			rounded
 			text
 			class="mx-1"
-			@click="onClick">Sign in</v-btn>
+			to="/login">Sign in</v-btn>
 		<v-btn
 			rounded
 			class="mx-1"
-			@click="onClick">Sign up</v-btn>
+			to="/signup">Sign up</v-btn>
 	</v-app-bar>
 </template>
 
 <script lang="ts">
 
-import { Vue, Component } from 'vue-property-decorator'
+import { Vue, Component } from "vue-property-decorator"
 
 @Component
 export default class Header extends Vue {
-	onClick() {
-		console.log("test");
-	}
 }
 
 </script>
