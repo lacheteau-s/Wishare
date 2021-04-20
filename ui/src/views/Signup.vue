@@ -17,6 +17,9 @@
 							required/>
 						<v-text-field
 							class="mt-2"
+							:type="showPassword ? 'text' : 'password'"
+							:append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+							@click:append="showPassword = !showPassword"
 							label="Password"
 							v-model="password"
 							:rules="rules.password"
@@ -42,6 +45,7 @@ export default class Signup extends Vue {
 	username = "";
 	email = "";
 	password = "";
+	showPassword = false;
 
 	rules = {
 		username: [
