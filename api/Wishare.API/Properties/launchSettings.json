@@ -1,0 +1,15 @@
+﻿{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "Wishare.API": {
+      "commandName": "Project",
+      //"dotnetRunMessages": "true", // https://stackoverflow.com/questions/65923063/purpose-of-dotnetrunmessages-in-launchsettings-json
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "http://localhost:5000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
