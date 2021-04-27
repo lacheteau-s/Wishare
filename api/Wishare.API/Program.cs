@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
 using System;
@@ -15,31 +16,27 @@ namespace Wishare.API
 	{
 		public static int Main(string[] args)
 		{
-			var logger = new LoggerConfiguration().MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-				.Enrich.FromLogContext()
-				.WriteTo.Console()
-				.CreateLogger();
+			var host = CreateHostBuilder(args).Build();
+			var services = host.Services;
+			var logger = services.GetService<ILogger<Program>>(); // Consider using CreateBootstrapLogger if we have some complex startup logic further down the line 
 
 			try
 			{
-				Log.Information("Starting web host");
-				CreateHostBuilder(args).Build().Run();
+				logger.LogInformation("API starting");
+				host.Run();
+				logger.LogInformation("API stopped");
 				return 0;
 			}
 			catch (Exception ex)
 			{
-				Log.Fatal(ex, "Host terminated unexpectedly");
+				logger.LogCritical(ex, "An error occurred during startup");
 				return 1;
-			}
-			finally
-			{
-				Log.CloseAndFlush();
 			}
 		}
 
 		public static IHostBuilder CreateHostBuilder(string[] args) =>
 			Host.CreateDefaultBuilder(args)
-				.UseSerilog()
+				.UseSerilog((context, config) => config.ReadFrom.Configuration(context.Configuration))
 				.ConfigureWebHostDefaults(webBuilder =>
 				{
 					webBuilder.UseStartup<Startup>().UseKestrel();
