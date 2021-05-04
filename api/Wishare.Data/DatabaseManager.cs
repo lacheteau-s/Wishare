@@ -10,13 +10,15 @@ namespace Wishare.Data
 	public class DatabaseManager : IDatabaseManager
 	{
 		private readonly IFileProvider _sqlFileProvider;
+		private readonly IQueryExecutor _queryExecutor;
 		private readonly ILogger<DatabaseManager> _logger;
 
 		private static readonly Regex _sqlFileRegex = new("^[0-9]{4}_(?!_)[a-zA-Z_]+.sql$", RegexOptions.Compiled);
 
-		public DatabaseManager(IFileProvider sqlFileProvider, ILogger<DatabaseManager> logger)
+		public DatabaseManager(IFileProvider sqlFileProvider, IQueryExecutor queryExecutor, ILogger<DatabaseManager> logger)
 		{
 			_sqlFileProvider = sqlFileProvider ?? throw new ArgumentNullException(nameof(sqlFileProvider));
+			_queryExecutor = queryExecutor?? throw new ArgumentNullException(nameof(queryExecutor));
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
 
