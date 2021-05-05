@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Wishare.Data;
 
 namespace Wishare.API
 {
@@ -18,13 +19,18 @@ namespace Wishare.API
 		{
 			var host = CreateHostBuilder(args).Build();
 			var services = host.Services;
-			var logger = services.GetService<ILogger<Program>>(); // Consider using CreateBootstrapLogger if we have some complex startup logic further down the line 
+			var logger = services.GetRequiredService<ILogger<Program>>(); // Consider using CreateBootstrapLogger if we have some complex startup logic further down the line 
 
 			try
 			{
-				logger.LogInformation("API starting");
+				logger.LogInformation("Starting Wishare.API...");
+
+				var dbManager = services.GetRequiredService<IDatabaseManager>();
+				var version = dbManager.ExpectedSchemaVersion;
+
+				logger.LogInformation($"Expected database version: {version}");
+
 				host.Run();
-				logger.LogInformation("API stopped");
 				return 0;
 			}
 			catch (Exception ex)

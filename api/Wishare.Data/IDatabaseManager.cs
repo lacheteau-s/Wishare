@@ -8,5 +8,6 @@ namespace Wishare.Data
 {
 	public interface IDatabaseManager
 	{
+		int ExpectedSchemaVersion { get; }
 	}
 }
