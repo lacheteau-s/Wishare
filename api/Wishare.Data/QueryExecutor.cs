@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Threading;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Wishare.Data
@@ -16,13 +18,16 @@ namespace Wishare.Data
 			_connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
 		}
 
-		public Task<object?> ExecuteScalarAsync(string query, CancellationToken cancellationToken = default)
-			=> ExecuteAsync(query, (command) => command.ExecuteScalarAsync(cancellationToken), cancellationToken);
+		public Task<object?> ExecuteScalarAsync(string query, IReadOnlyDictionary<string, object> parameters = default, CancellationToken cancellationToken = default)
+			=> ExecuteAsync(query, parameters, (command) => command.ExecuteScalarAsync(cancellationToken), cancellationToken);
 
-		private async Task<T> ExecuteAsync<T>(string query, Func<DbCommand, Task<T>> execute, CancellationToken cancellationToken = default)
+		public Task<int> ExecuteNonQueryAsync(string query, IReadOnlyDictionary<string, object> parameters = default, CancellationToken cancellationToken = default)
+			=> ExecuteAsync(query, parameters, (command) => command.ExecuteNonQueryAsync(cancellationToken), cancellationToken);
+		
+		private async Task<T> ExecuteAsync<T>(string query, IReadOnlyDictionary<string, object> parameters, Func<DbCommand, Task<T>> execute, CancellationToken cancellationToken = default)
 		{
 			await using var connection = await CreateConnection(cancellationToken);
-			using var command = CreateCommand(connection, query);
+			using var command = CreateCommand(connection, query, parameters);
 
 			return await execute(command);
 		}
@@ -31,20 +36,47 @@ namespace Wishare.Data
 		{
 			var connection = _dbProviderFactory.CreateConnection();
 
-			connection.ConnectionString = _connectionString;
-			await connection.OpenAsync(cancellationToken);
-			
-			return connection;
+			try
+			{
+				connection.ConnectionString = _connectionString;
+				await connection.OpenAsync(cancellationToken);
+
+				return connection;
+			}
+			catch
+			{
+				await connection.DisposeAsync();
+				throw;
+			}
 		}
 
-		private DbCommand CreateCommand(DbConnection connection, string query)
+		private DbCommand CreateCommand(DbConnection connection, string query, IReadOnlyDictionary<string, object> parameters)
 		{
 			var command = connection.CreateCommand();
 
-			command.CommandText = query;
-			command.CommandType = System.Data.CommandType.Text;
+			try
+			{
+				command.CommandText = query;
+				command.CommandType = System.Data.CommandType.Text;
 
-			return command;
+				if (parameters != null && parameters.Any())
+				{
+					foreach (var p in parameters)
+					{
+						var parameter = command.CreateParameter();
+						parameter.ParameterName = p.Key;
+						parameter.Value = p.Value;
+						command.Parameters.Add(parameter);
+					}
+				}
+
+				return command;
+			}
+			catch
+			{
+				command.Dispose();
+				throw;
+			}
 		}
 	}
 }

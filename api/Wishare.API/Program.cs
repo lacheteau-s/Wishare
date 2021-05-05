@@ -49,6 +49,9 @@ namespace Wishare.API
 		{
 			var dbManager = services.GetRequiredService<IDatabaseManager>();
 			var isUpToDate = await dbManager.CheckDatabaseVersion();
+
+			if (!isUpToDate)
+				await dbManager.UpdateDatabase();
 		}
 	}
 }
