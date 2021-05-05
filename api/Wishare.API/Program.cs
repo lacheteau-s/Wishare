@@ -15,7 +15,7 @@ namespace Wishare.API
 {
 	public class Program
 	{
-		public static int Main(string[] args)
+		public static async Task<int> Main(string[] args)
 		{
 			var host = CreateHostBuilder(args).Build();
 			var services = host.Services;
@@ -25,12 +25,9 @@ namespace Wishare.API
 			{
 				logger.LogInformation("Starting Wishare.API...");
 
-				var dbManager = services.GetRequiredService<IDatabaseManager>();
-				var version = dbManager.ExpectedSchemaVersion;
+				await CheckDatabaseVersion(services);
 
-				logger.LogInformation($"Expected database version: {version}");
-
-				host.Run();
+				await host.RunAsync();
 				return 0;
 			}
 			catch (Exception ex)
@@ -47,5 +44,11 @@ namespace Wishare.API
 				{
 					webBuilder.UseStartup<Startup>().UseKestrel();
 				});
+
+		public static async Task CheckDatabaseVersion(IServiceProvider services)
+		{
+			var dbManager = services.GetRequiredService<IDatabaseManager>();
+			var isUpToDate = await dbManager.CheckDatabaseVersion();
+		}
 	}
 }

@@ -9,5 +9,7 @@ namespace Wishare.Data
 	public interface IDatabaseManager
 	{
 		int ExpectedSchemaVersion { get; }
+		Task<int> GetCurrentSchemaVersion();
+		Task<bool> CheckDatabaseVersion();
 	}
 }
