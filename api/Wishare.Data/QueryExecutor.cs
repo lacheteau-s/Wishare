@@ -18,16 +18,16 @@ namespace Wishare.Data
 			_connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
 		}
 
-		public Task<object?> ExecuteScalarAsync(string query, IReadOnlyDictionary<string, object> parameters = default, CancellationToken cancellationToken = default)
-			=> ExecuteAsync(query, parameters, (command) => command.ExecuteScalarAsync(cancellationToken), cancellationToken);
+		public Task<object?> ExecuteScalarAsync(Query query, CancellationToken cancellationToken = default)
+			=> ExecuteAsync(query, (command) => command.ExecuteScalarAsync(cancellationToken), cancellationToken);
 
-		public Task<int> ExecuteNonQueryAsync(string query, IReadOnlyDictionary<string, object> parameters = default, CancellationToken cancellationToken = default)
-			=> ExecuteAsync(query, parameters, (command) => command.ExecuteNonQueryAsync(cancellationToken), cancellationToken);
+		public Task<int> ExecuteNonQueryAsync(Query query, CancellationToken cancellationToken = default)
+			=> ExecuteAsync(query, (command) => command.ExecuteNonQueryAsync(cancellationToken), cancellationToken);
 		
-		private async Task<T> ExecuteAsync<T>(string query, IReadOnlyDictionary<string, object> parameters, Func<DbCommand, Task<T>> execute, CancellationToken cancellationToken = default)
+		private async Task<T> ExecuteAsync<T>(Query query, Func<DbCommand, Task<T>> execute, CancellationToken cancellationToken = default)
 		{
 			await using var connection = await CreateConnection(cancellationToken);
-			using var command = CreateCommand(connection, query, parameters);
+			using var command = CreateCommand(connection, query);
 
 			return await execute(command);
 		}
@@ -50,24 +50,21 @@ namespace Wishare.Data
 			}
 		}
 
-		private DbCommand CreateCommand(DbConnection connection, string query, IReadOnlyDictionary<string, object> parameters)
+		private DbCommand CreateCommand(DbConnection connection, Query query)
 		{
 			var command = connection.CreateCommand();
 
 			try
 			{
-				command.CommandText = query;
-				command.CommandType = System.Data.CommandType.Text;
+				command.CommandText = query.Text;
+				command.CommandType = query.Type;
 
-				if (parameters != null && parameters.Any())
+				foreach (var p in query)
 				{
-					foreach (var p in parameters)
-					{
-						var parameter = command.CreateParameter();
-						parameter.ParameterName = p.Key;
-						parameter.Value = p.Value;
-						command.Parameters.Add(parameter);
-					}
+					var parameter = command.CreateParameter();
+					parameter.ParameterName = p.Key;
+					parameter.Value = p.Value;
+					command.Parameters.Add(parameter);
 				}
 
 				return command;

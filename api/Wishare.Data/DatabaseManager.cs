@@ -35,7 +35,7 @@ namespace Wishare.Data
 		{
 			try
 			{
-				var version = await _queryExecutor.ExecuteScalarAsync(_getCurrentVersionQuery);
+				var version = await _queryExecutor.ExecuteScalarAsync(new Query(_getCurrentVersionQuery));
 				return version == DBNull.Value
 					? throw new DatabaseException("Failed to retrieve version from database: table 'schema_version' is empty.")
 					: (int)version;
@@ -100,12 +100,12 @@ namespace Wishare.Data
 				query = await reader.ReadToEndAsync();
 			}
 
-			await _queryExecutor.ExecuteNonQueryAsync(query);
-			await _queryExecutor.ExecuteNonQueryAsync(_insertNewVersionQuery, new Dictionary<string, object>
+			await _queryExecutor.ExecuteNonQueryAsync(new Query(query));
+			await _queryExecutor.ExecuteNonQueryAsync(new Query(_insertNewVersionQuery)
 			{
-				["@version"] = script.Version,
-				["@file_name"] = script.File.Name,
-				["@update_date"] = DateTime.UtcNow
+				{ "@version", script.Version },
+				{ "@file_name", script.File.Name },
+				{ "@update_date", DateTime.UtcNow }
 			});
 
 			_logger.LogInformation($"Applied script {script.File.PhysicalPath}. Database now at version {script.Version}");
