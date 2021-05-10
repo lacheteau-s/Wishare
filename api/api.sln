@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wishare.API", "Wishare.API\Wishare.API.csproj", "{DB41D0A1-C082-4236-ACA7-4160B598F168}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wishare.API", "Wishare.API\Wishare.API.csproj", "{DB41D0A1-C082-4236-ACA7-4160B598F168}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wishare.Data", "Wishare.Data\Wishare.Data.csproj", "{28FF0B78-C36B-47B0-97B2-078AA677E574}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wishare.Data.Tests", "Wishare.Data.Tests\Wishare.Data.Tests.csproj", "{300C2FDE-590A-4934-860E-570850401BF4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{DB41D0A1-C082-4236-ACA7-4160B598F168}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB41D0A1-C082-4236-ACA7-4160B598F168}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB41D0A1-C082-4236-ACA7-4160B598F168}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28FF0B78-C36B-47B0-97B2-078AA677E574}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28FF0B78-C36B-47B0-97B2-078AA677E574}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28FF0B78-C36B-47B0-97B2-078AA677E574}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28FF0B78-C36B-47B0-97B2-078AA677E574}.Release|Any CPU.Build.0 = Release|Any CPU
+		{300C2FDE-590A-4934-860E-570850401BF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{300C2FDE-590A-4934-860E-570850401BF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{300C2FDE-590A-4934-860E-570850401BF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{300C2FDE-590A-4934-860E-570850401BF4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
